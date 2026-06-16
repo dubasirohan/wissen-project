@@ -1,0 +1,42 @@
+name: Deploy AWS Lambda
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Package Lambda
+        run: |
+          mkdir dist
+          cp lambda_function.py dist/
+          cd dist
+          zip -r ../function.zip .
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::447580526006:role/GitHubActionsLambdaDeployRole
+          aws-region: us-east-1
+
+      - name: Deploy Lambda
+        run: |
+          aws lambda update-function-code \
+          --function-name my-python-lambda \
+          --zip-file fileb://function.zip
