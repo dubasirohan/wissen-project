@@ -18,5 +18,5 @@ def lambda_handler(event, context):
     #  Existing logic (your original demo)
     return {
         "statusCode": 200,
-        "body": json.dumps({"message": "Hello Wissen! Existing functionality works "})
+        "body": json.dumps({"message": "Hello Wissen! Existing functionality works, verified "})
     }
