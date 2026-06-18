@@ -3,7 +3,7 @@ name: Deploy imageprocessor Lambda
 on:
   push:
     paths:
-      - 'lambdaprocessor/**'
+      - 'imageprocessor/**'
 
 jobs:
   deploy:
@@ -18,17 +18,22 @@ jobs:
       with:
         python-version: '3.9'
 
-    - name: Install dependencies
+    # ✅ Create clean build folder
+    - name: Prepare deployment package
       run: |
-        pip install --target ./imageprocessor/package pillow
+        mkdir -p build
+        pip install pillow -t build
 
-    - name: Zip Lambda package
+        # Copy your lambda file
+        cp imageprocessor/lambda_function2.py build/
+
+    # ✅ Zip everything correctly
+    - name: Zip package
       run: |
-        cd imageprocessor/package
+        cd build
         zip -r ../function.zip .
-        cd ..
-        zip -g function.zip lambda_function2.py
 
+    # ✅ Deploy to Lambda
     - name: Deploy to AWS Lambda
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -37,4 +42,4 @@ jobs:
       run: |
         aws lambda update-function-code \
           --function-name imageprocessor \
-          --zip-file fileb://imageprocessor/function.zip
+          --zip-file fileb://function.zip
