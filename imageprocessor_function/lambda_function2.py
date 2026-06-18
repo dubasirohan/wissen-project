@@ -1,25 +1,47 @@
-name: Deploy Image Processing Lambda
+import json
+import boto3
+from PIL import Image
+import io
 
-on:
-  push:
-    paths:
-      - 'image-processing-lambda/**'
+s3 = boto3.client('s3')
 
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
+DEST_BUCKET = "processed-image-bucket"
 
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v3
+def lambda_handler(event, context):
 
-    - name: Zip Lambda code
-      run: |
-        cd image-processing-lambda
-        zip -r function.zip .
+    bucket = event['bucket']
+    key = event['key']
 
-    - name: Deploy to AWS Lambda
-      run: |
-        aws lambda update-function-code \
-          --function-name image-processing-lambda \
-          --zip-file fileb://image-processing-lambda/function.zip
+    print(f"Processing file: {key} from bucket: {bucket}")
+
+    # Get image from upload bucket
+    response = s3.get_object(Bucket=bucket, Key=key)
+    image_data = response['Body'].read()
+
+    # Open image
+    image = Image.open(io.BytesIO(image_data))
+
+    # ✅ Resize (you can change dimensions)
+    image = image.resize((800, 800))
+
+    # ✅ Compress + convert format
+    buffer = io.BytesIO()
+    image.save(buffer, format="JPEG", quality=70)
+    buffer.seek(0)
+
+    # Save to processed bucket
+    new_key = f"processed-{key}"
+
+    s3.put_object(
+        Bucket=DEST_BUCKET,
+        Key=new_key,
+        Body=buffer,
+        ContentType="image/jpeg"
+    )
+
+    print(f"✅ Processed image saved: {new_key}")
+
+    return {
+        "statusCode": 200,
+        "body": json.dumps("Image processed successfully")
+    }
