@@ -2,8 +2,8 @@ name: Deploy imageprocessor Lambda
 
 on:
   push:
-    branches:
-      - main
+    paths:
+      - 'lambdaprocessor/**'
 
 jobs:
   deploy:
