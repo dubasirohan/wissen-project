@@ -62,5 +62,5 @@ Timestamp: {event_time}
 
     return {
         "statusCode": 200,
-        "body": json.dumps({"message": "Validation complete"})
+        "body": json.dumps({"message": "Validation complete, successful"})
     }
