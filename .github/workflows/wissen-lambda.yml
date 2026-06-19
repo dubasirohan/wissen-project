@@ -2,7 +2,7 @@ name: Deploy AWS Lambda
 
 on:
   push:
-    paths: :
+    paths: 
       - 'wissen-lambda/**'
 
 jobs:
