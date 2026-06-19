@@ -1,0 +1,38 @@
+name: Deploy imageprocessor Lambda
+
+on:
+  push:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # ✅ Package ONLY Lambda code (NO Pillow)
+      - name: Package Lambda
+        run: |
+          mkdir dist
+          cp image-processing-function/lambda_function.py dist/
+          cd dist
+          zip -r ../function.zip .
+
+      # ✅ Use secure AWS auth (OIDC)
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::447580526006:role/GitHubActionsLambdaDeployRole
+          aws-region: us-east-1
+
+      # ✅ Deploy
+      - name: Deploy Lambda
+        run: |
+          aws lambda update-function-code \
+          --function-name imageprocessor \
+          --zip-file fileb://function.zip
