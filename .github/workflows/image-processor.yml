@@ -19,7 +19,7 @@ jobs:
       - name: Package Lambda
         run: |
           mkdir dist
-          cp image-processing-function/lambda_function.py dist/
+          cp image_processing_function/lambda_function.py dist/
           cd dist
           zip -r ../function.zip .
 
