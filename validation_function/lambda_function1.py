@@ -56,7 +56,7 @@ Timestamp: {event_time}
 
                 sns.publish(
                     TopicArn="arn:aws:sns:us-east-1:447580526006:sns-wissen",
-                    Subject="Upload Failed unfortunately - Invalid File",
+                    Subject="Upload Failed - Invalid File",
                     Message=message
                 )
 
