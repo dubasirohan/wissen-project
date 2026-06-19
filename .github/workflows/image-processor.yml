@@ -1,4 +1,4 @@
-name: Deploy imageprocessor Lambda
+name: Deploy image-processor Lambda
 
 on:
   push:
@@ -34,5 +34,5 @@ jobs:
       - name: Deploy Lambda
         run: |
           aws lambda update-function-code \
-          --function-name imageprocessor \
+          --function-name image-processor \
           --zip-file fileb://function.zip
