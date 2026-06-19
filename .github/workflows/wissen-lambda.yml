@@ -23,7 +23,7 @@ jobs:
       - name: Package Lambda
         run: |
           mkdir dist
-          cp wissen-lambda/lambda_function1.py dist/
+          cp lambda_function1.py dist/
           cd dist
           zip -r ../function.zip .
 
